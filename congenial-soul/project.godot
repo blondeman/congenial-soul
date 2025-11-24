@@ -11,5 +11,11 @@ config_version=5
 [application]
 
 config/name="CongenialSoul"
+run/main_scene="uid://c61e81ehl37pn"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+NetworkManager="*res://scripts/global/NetworkManager.gd"
+PlayerManager="*res://scripts/global/PlayerManager.gd"
