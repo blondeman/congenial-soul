@@ -1,3 +1,30 @@
-[gd_scene format=3 uid="uid://eq1pgsn2bp3k"]
+[gd_scene load_steps=3 format=3 uid="uid://eq1pgsn2bp3k"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8cj0n"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_uwrxv"]
+size = Vector3(20, 1, 20)
 
 [node name="game_world" type="Node3D"]
+
+[node name="floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_8cj0n")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("BoxMesh_uwrxv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.6967646, 0.4748846, -0.5375907, 0, 0.74946433, 0.6620447, 0.7172999, -0.46128932, 0.5222002, 0, 0, 0)
+shadow_enabled = true
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://clvjfj3e7twfm")
+spawn_path = NodePath("..")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 3.345525e-08, -8.076811e-08, -4.53265e-08, 0.5915911, 0.8062381, 7.47546e-08, 0.8062381, -0.5915911, 0, 7, -10)

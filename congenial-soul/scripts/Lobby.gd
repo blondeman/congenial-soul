@@ -23,7 +23,7 @@ func set_player_list():
 	for child in player_list.get_children():
 		child.queue_free()
 	
-	for peer_id in PlayerManager.players:
+	for peer_id in PlayerManager.player_data:
 		var label: Label = Label.new()
 		label.text = str(peer_id)
 		

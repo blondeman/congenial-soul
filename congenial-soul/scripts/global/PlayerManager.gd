@@ -1,51 +1,69 @@
 extends Node
 
-var players := {} # { peer_id: { "username": String, "color": Color } }
+@onready var game_root = get_tree().get_first_node_in_group("game_root")
+var player_scene: PackedScene = preload("res://scenes/player.tscn")
+var player_data := {} # { peer_id: { "username": String, "color": Color } }
 signal data_changed()
 
 func _ready():
+	NetworkManager.server_started.connect(_on_peer_connected)
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-	NetworkManager.server_started.connect(_on_peer_connected)
+	multiplayer.peer_disconnected.connect(delete_player)
+	multiplayer.server_disconnected.connect(_on_server_disconnected)
+
+
+func _on_server_disconnected() -> void:
+	clear()
+
 
 func _on_peer_connected(id: int = 1) -> void:
 	if multiplayer.is_server():
 		var username = "Player_%s" % id
 		var color = Color(randf(), randf(), randf())
-		players[id] = { "username": username, "color": color }
+		player_data[id] = { "username": username, "color": color }
 
-		rpc("client_sync_players", players)
+		rpc("client_sync_player_data", player_data)
+	spawn_player(id)
 
 
 func _on_peer_disconnected(id: int) -> void:
-	players.erase(id)
-	rpc("client_sync_players", players)
+	player_data.erase(id)
+	rpc("client_sync_player_data", player_data)
 
 
 @rpc("any_peer", "call_local")
-func client_sync_players(server_players: Dictionary) -> void:
-	players = server_players.duplicate(true)
+func client_sync_player_data(server_players: Dictionary) -> void:
+	player_data = server_players.duplicate(true)
 	data_changed.emit()
 
 
+func spawn_player(id: int):
+	if !multiplayer.is_server():
+		return
+	var player = player_scene.instantiate()
+	player.name = str(id)
+	game_root.add_child(player)
+
+
+func delete_player(id: int):
+	if !multiplayer.is_server():
+		return
+	rpc("_delete_player", id)
+
+
+@rpc("any_peer", "call_local")
+func _delete_player(id: int):
+	if game_root.has_node(str(id)):
+		game_root.get_node(str(id)).queue_free()
+
+
 func get_player_data(id: int) -> Dictionary:
-	if players.has(id):
-		return players[id]
+	if player_data.has(id):
+		return player_data[id]
 	return {}
 
 
-func get_peer_list() -> Array:
-	if !multiplayer.has_multiplayer_peer():
-		return []
-	var list := multiplayer.get_peers()
-
-	#add own player
-	if multiplayer.get_unique_id() not in list:
-		list.append(multiplayer.get_unique_id())
-
-	return list
-
-
 func clear():
-	players = {}
+	player_data = {}
 	data_changed.emit()

@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3 uid="uid://clvjfj3e7twfm"]
+
+[ext_resource type="Script" uid="uid://dxnslu6ys7eo2" path="res://scripts/Player.gd" id="1_3vyb7"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_yqjtg"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_lnu2h"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_u8vuu"]
+size = Vector3(0.5, 0.1, 0.3)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_u8vuu"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="player" type="CharacterBody3D"]
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+script = ExtResource("1_3vyb7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_yqjtg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_lnu2h")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23052311, 0.3976146)
+mesh = SubResource("BoxMesh_u8vuu")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_u8vuu")
