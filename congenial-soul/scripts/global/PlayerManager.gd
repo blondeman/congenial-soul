@@ -6,36 +6,28 @@ var player_data := {} # { peer_id: { "username": String, "color": Color } }
 signal data_changed()
 
 func _ready():
-	NetworkManager.server_started.connect(_on_peer_connected)
-	multiplayer.peer_connected.connect(_on_peer_connected)
+	if multiplayer.is_server():
+		NetworkManager.server_started.connect(_on_peer_connected)
+		multiplayer.peer_connected.connect(_on_peer_connected)
+		multiplayer.peer_disconnected.connect(delete_player)
+	
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-	multiplayer.peer_disconnected.connect(delete_player)
-	multiplayer.server_disconnected.connect(_on_server_disconnected)
+	multiplayer.server_disconnected.connect(clear)
 
 
-func _on_server_disconnected() -> void:
-	clear()
+func _on_peer_disconnected(id: int) -> void:
+	player_data.erase(id)
+	rpc("_client_sync_player_data", player_data)
 
 
 func _on_peer_connected(id: int = 1) -> void:
 	if multiplayer.is_server():
 		var username = "Player_%s" % id
-		var color = Color(randf(), randf(), randf())
+		var color = Color.from_hsv(randf(), 1, 1)
 		player_data[id] = { "username": username, "color": color }
 
-		rpc("client_sync_player_data", player_data)
-	spawn_player(id)
-
-
-func _on_peer_disconnected(id: int) -> void:
-	player_data.erase(id)
-	rpc("client_sync_player_data", player_data)
-
-
-@rpc("any_peer", "call_local")
-func client_sync_player_data(server_players: Dictionary) -> void:
-	player_data = server_players.duplicate(true)
-	data_changed.emit()
+		rpc("_client_sync_player_data", player_data)
+		spawn_player(id)
 
 
 func spawn_player(id: int):
@@ -43,6 +35,7 @@ func spawn_player(id: int):
 		return
 	var player = player_scene.instantiate()
 	player.name = str(id)
+	player.position = Vector3(0, 2, 0)
 	game_root.add_child(player)
 
 
@@ -58,7 +51,15 @@ func _delete_player(id: int):
 		game_root.get_node(str(id)).queue_free()
 
 
-func get_player_data(id: int) -> Dictionary:
+@rpc("any_peer", "call_local")
+func _client_sync_player_data(server_players: Dictionary) -> void:
+	player_data = server_players.duplicate(true)
+	data_changed.emit()
+
+
+func get_player_data(id) -> Dictionary:
+	if typeof(id) == TYPE_STRING:
+		id = id.to_int()
 	if player_data.has(id):
 		return player_data[id]
 	return {}

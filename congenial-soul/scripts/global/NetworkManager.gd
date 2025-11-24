@@ -9,7 +9,7 @@ signal server_started()
 func host(port: int = 7777) -> void:
 	var err := peer.create_server(port, 32)
 	if err != OK:
-		push_error("Failed to start server: %s" % err)
+		#push_error("Failed to start server: %s" % err)
 		return
 
 	multiplayer.multiplayer_peer = peer
@@ -22,7 +22,7 @@ func host(port: int = 7777) -> void:
 func join(ip: String, port: int = 7777) -> void:
 	var err := peer.create_client(ip, port)
 	if err != OK:
-		push_error("Failed to connect: %s" % err)
+		#push_error("Failed to connect: %s" % err)
 		return
 
 	multiplayer.multiplayer_peer = peer

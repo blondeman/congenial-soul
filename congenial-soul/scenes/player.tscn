@@ -1,13 +1,30 @@
-[gd_scene load_steps=6 format=3 uid="uid://clvjfj3e7twfm"]
+[gd_scene load_steps=7 format=3 uid="uid://clvjfj3e7twfm"]
 
 [ext_resource type="Script" uid="uid://dxnslu6ys7eo2" path="res://scripts/Player.gd" id="1_3vyb7"]
+[ext_resource type="Shader" uid="uid://5v721ljfp5rl" path="res://Mote.gdshader" id="2_g2els"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_yqjtg"]
+radius = 0.25
 
 [sub_resource type="SphereMesh" id="SphereMesh_lnu2h"]
+radius = 0.25
+height = 0.5
 
-[sub_resource type="BoxMesh" id="BoxMesh_u8vuu"]
-size = Vector3(0.5, 0.1, 0.3)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qhqgy"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_g2els")
+shader_parameter/base_color = Color(1, 0.5411765, 1, 1)
+shader_parameter/noise_displacement = 0.10000000149012
+shader_parameter/noise_scale = 15.0000002086168
+shader_parameter/noise_time_scale = 0.60000000894072
+shader_parameter/alpha_distance_min = 0.999999988824
+shader_parameter/alpha_distance_max = 1.999999977648
+shader_parameter/emission_intensity = 0.5000000074506
+shader_parameter/highlight_intensity = 1.0000000149012
+shader_parameter/rim_strength = 2.0
+shader_parameter/rim_power = 1.5000000679901202
+shader_parameter/min_alpha = 0.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_u8vuu"]
 properties/0/path = NodePath(".:position")
@@ -17,20 +34,27 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="player" type="CharacterBody3D"]
+[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("floor_ray", "mesh")]
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 script = ExtResource("1_3vyb7")
+hover_velocity = 2.0
+floor_ray = NodePath("RayCast3D")
+mesh = NodePath("MeshInstance3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_yqjtg")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_lnu2h")
+surface_material_override/0 = SubResource("ShaderMaterial_qhqgy")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23052311, 0.3976146)
-mesh = SubResource("BoxMesh_u8vuu")
+visible = false
+mesh = SubResource("SphereMesh_lnu2h")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_u8vuu")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(0, -1.2, 0)
