@@ -1,7 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://clvjfj3e7twfm"]
+[gd_scene load_steps=9 format=3 uid="uid://clvjfj3e7twfm"]
 
 [ext_resource type="Script" uid="uid://dxnslu6ys7eo2" path="res://scripts/Player.gd" id="1_3vyb7"]
 [ext_resource type="Shader" uid="uid://5v721ljfp5rl" path="res://Mote.gdshader" id="2_g2els"]
+
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_g2els"]
+length = 1.2
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_yqjtg"]
 radius = 0.25
@@ -38,17 +41,21 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "camera", "ray")]
-collision_layer = 2
+[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "camera")]
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 script = ExtResource("1_3vyb7")
-hover_strength = 50.0
-hover_damping = 5.0
-speed = 5.0
+hover_velocity = 2.0
 mesh = NodePath("graphics/MeshInstance3D")
-camera = NodePath("camera")
-ray = NodePath("hover_ray")
+camera = NodePath("")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("SeparationRayShape3D_g2els")
+
+[node name="RayCast3D" type="RayCast3D" parent="SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+target_position = Vector3(0, -1.2, 0)
 
 [node name="collision" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_yqjtg")
@@ -65,13 +72,6 @@ surface_material_override/0 = SubResource("ShaderMaterial_qhqgy")
 cast_shadow = 3
 mesh = SubResource("SphereMesh_g2els")
 skeleton = NodePath("../..")
-
-[node name="hover_ray" type="RayCast3D" parent="."]
-target_position = Vector3(0, -1.4, 0)
-
-[node name="camera" type="Camera3D" parent="."]
-transform = Transform3D(0.7071067, 0.49999997, -0.49999994, 0, 0.70710677, 0.7071067, 0.7071067, -0.49999997, 0.49999994, -2.5, 5, 2.5)
-fov = 60.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_u8vuu")

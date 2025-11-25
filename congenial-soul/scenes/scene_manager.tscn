@@ -4,8 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://c61e81ehl37pn" path="res://scenes/menu.tscn" id="1_we8k5"]
 [ext_resource type="PackedScene" uid="uid://eq1pgsn2bp3k" path="res://scenes/game.tscn" id="2_b81s6"]
 
-[node name="scene_manager" type="Node"]
+[node name="scene_manager" type="Node" node_paths=PackedStringArray("menu", "game") groups=["scene_manager"]]
 script = ExtResource("1_65mdo")
+menu = NodePath("menu")
+game = NodePath("game_world")
 
 [node name="menu" parent="." instance=ExtResource("1_we8k5")]
 

@@ -16,51 +16,54 @@ size = Vector3(7, 1, 9)
 
 [node name="game_world" type="Node3D"]
 
-[node name="floor" type="StaticBody3D" parent="."]
+[node name="map" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="floor"]
+[node name="floor" type="StaticBody3D" parent="map"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/floor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape3D_uwrxv")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="floor"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="map/floor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_uwrxv")
 
-[node name="floor2" type="StaticBody3D" parent="."]
+[node name="floor2" type="StaticBody3D" parent="map"]
 transform = Transform3D(1, 0, 0, 0, 0.9524915, 0.30456507, 0, -0.30456507, 0.9524915, 5.4832106, 1.2383995, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="floor2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/floor2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape3D_8cj0n")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="floor2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="map/floor2"]
 transform = Transform3D(1, 0, 0, 0, 1, 2.6013366e-08, 0, -2.6013366e-08, 1, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_8cj0n")
 
-[node name="floor3" type="StaticBody3D" parent="."]
+[node name="floor3" type="StaticBody3D" parent="map"]
 transform = Transform3D(1, 0, 0, 0, 0.9988634, 0.04766433, 0, -0.04766433, 0.9988634, 5.4832106, 3.5301297, 8.649468)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="floor3"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/floor3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape3D_8cj0n")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="floor3"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="map/floor3"]
 transform = Transform3D(1, 0, 0, 0, 1, 2.6013366e-08, 0, -2.6013366e-08, 1, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_8cj0n")
 
-[node name="floor4" type="StaticBody3D" parent="."]
+[node name="floor4" type="StaticBody3D" parent="map"]
 transform = Transform3D(1, 0, 0, 0, 0.9988634, 0.04766433, 0, -0.04766433, 0.9988634, -0.71627474, 4.247388, 8.649468)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="floor4"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="map/floor4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape3D_8cj0n")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="floor4"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="map/floor4"]
 transform = Transform3D(1, 0, 0, 0, 1, 2.6013366e-08, 0, -2.6013366e-08, 1, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_8cj0n")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.6967646, 0.4748846, -0.5375907, 0, 0.74946433, 0.6620447, 0.7172999, -0.46128932, 0.5222002, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 shadow_enabled = true
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
@@ -68,9 +71,4 @@ _spawnable_scenes = PackedStringArray("uid://clvjfj3e7twfm")
 spawn_path = NodePath("..")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-1, 3.3455258e-08, -8.076812e-08, -2.2871221e-08, 0.7915864, 0.6110574, 8.4377994e-08, 0.6110574, -0.7915864, 0, 6.9962873, -10.914368)
-visible = false
-
-[node name="Camera3D2" type="Camera3D" parent="."]
-transform = Transform3D(-1, 3.3455258e-08, -8.0768096e-08, 2.3072941e-08, 0.99212134, 0.1252813, 8.432306e-08, 0.1252813, -0.99212134, 0, 0.78106165, -5.85463)
-current = true
+transform = Transform3D(1, 0, 0, 0, 0.79122365, 0.6115271, 0, -0.6115271, 0.79122365, 0, 6.996, 10)

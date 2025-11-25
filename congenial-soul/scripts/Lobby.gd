@@ -9,14 +9,17 @@ func _ready() -> void:
 func _on_disconnect_pressed() -> void:
 	NetworkManager.leave()
 	PlayerManager.clear()
+	get_tree().get_first_node_in_group("scene_manager").transition_to_menu()
 
 
 func _on_join_pressed() -> void:
 	NetworkManager.join("127.0.0.1")
+	get_tree().get_first_node_in_group("scene_manager").transition_to_game()
 
 
 func _on_host_pressed() -> void:
 	NetworkManager.host()
+	get_tree().get_first_node_in_group("scene_manager").transition_to_game()
 
 
 func set_player_list():

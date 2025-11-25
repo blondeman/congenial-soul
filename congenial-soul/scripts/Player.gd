@@ -1,10 +1,13 @@
 extends CharacterBody3D
 
-@export var speed: float = 200
-@export var hover_velocity: float = 50.0
+@export var hover_height := 1
+@export var hover_strength := 70.0
+@export var hover_damping := 10.0
+@export var speed: float = 10
 
-@export  var floor_ray: RayCast3D
 @export var mesh: MeshInstance3D
+@export var camera: Camera3D
+@export var ray: RayCast3D
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(name.to_int())
@@ -13,26 +16,40 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	set_color()
 	PlayerManager.data_changed.connect(set_color)
+	
+	if is_multiplayer_authority():
+		camera.current = true
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if !multiplayer.has_multiplayer_peer():
 		return
 	if !is_multiplayer_authority():
 		return
 
-	# Horizontal movement input
-	velocity.x = Input.get_axis("right", "left") * speed * delta
-	velocity.z = Input.get_axis("down", "up") * speed * delta
+	var input_direction = Vector2(Input.get_axis("left", "right"), Input.get_axis("down", "up")).normalized()
+	var forward = -get_viewport().get_camera_3d().global_transform.basis.z
+	var right   =  get_viewport().get_camera_3d().global_transform.basis.x
+
+	var direction = (right * input_direction.x) + (forward * input_direction.y)
+	direction.y = 0
+	direction = direction.normalized()
+
+	velocity.x = direction.x * speed
+	velocity.z = direction.z * speed
 
 
 func _physics_process(delta: float) -> void:
-	if floor_ray.is_colliding():
-		var distance = lerp(3.0, -0.2, global_position.y - floor_ray.get_collision_point().y)
-		velocity.y += hover_velocity * distance * delta
+	if ray.is_colliding():
+		var collision_y = ray.get_collision_point().y
+		var current_height = global_position.y - collision_y
+		var error = hover_height - current_height
+		var force = error * hover_strength
+		force -= velocity.y * hover_damping
+		velocity.y += force * delta
 	else:
 		velocity.y += get_gravity().y * delta
-	
+
 	move_and_slide()
 
 
