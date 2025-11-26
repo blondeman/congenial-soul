@@ -33,9 +33,11 @@ func _on_peer_connected(id: int = 1) -> void:
 func spawn_player(id: int):
 	if !multiplayer.is_server():
 		return
-	var player = player_scene.instantiate()
+
+	var player := player_scene.instantiate()
 	player.name = str(id)
 	player.position = Vector3(0, 2, 0)
+
 	game_root.add_child(player)
 
 

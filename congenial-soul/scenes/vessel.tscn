@@ -1,0 +1,67 @@
+[gd_scene load_steps=9 format=3 uid="uid://bevsw56gvujil"]
+
+[ext_resource type="Script" uid="uid://bibfaroka6ck0" path="res://scripts/EmptyVessel.gd" id="1_1xyma"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c7jn6"]
+height = 1.75
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_c7jn6"]
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1xyma"]
+albedo_color = Color(0.23730096, 0.5417596, 0.57695323, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_gxuoo"]
+radius = 0.2
+height = 1.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_7mffy"]
+radius = 0.1
+height = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hflg7"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1xyma"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="vessel" type="CharacterBody3D"]
+script = ExtResource("1_1xyma")
+
+[node name="collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
+shape = SubResource("CapsuleShape3D_c7jn6")
+
+[node name="graphics" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="graphics"]
+mesh = SubResource("CapsuleMesh_c7jn6")
+surface_material_override/0 = SubResource("StandardMaterial3D_1xyma")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="graphics"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, -0.5, 0)
+mesh = SubResource("CapsuleMesh_gxuoo")
+surface_material_override/0 = SubResource("StandardMaterial3D_1xyma")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="graphics"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, -0.5, 0)
+mesh = SubResource("CapsuleMesh_gxuoo")
+surface_material_override/0 = SubResource("StandardMaterial3D_1xyma")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="graphics"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14540455, 0.22047114, -0.4274847)
+mesh = SubResource("CapsuleMesh_7mffy")
+surface_material_override/0 = SubResource("StandardMaterial3D_hflg7")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="graphics"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.145, 0.22, -0.427)
+mesh = SubResource("CapsuleMesh_7mffy")
+surface_material_override/0 = SubResource("StandardMaterial3D_hflg7")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_1xyma")
