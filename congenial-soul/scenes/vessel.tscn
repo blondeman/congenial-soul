@@ -30,8 +30,9 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="vessel" type="CharacterBody3D"]
+[node name="vessel" type="CharacterBody3D" node_paths=PackedStringArray("mesh")]
 script = ExtResource("1_1xyma")
+mesh = NodePath("graphics/MeshInstance3D")
 
 [node name="collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)

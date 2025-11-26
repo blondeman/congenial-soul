@@ -11,6 +11,8 @@ var current_vessel: Vessel = null
 @export var mesh: MeshInstance3D
 @export var camera: Camera3D
 @export var ray: RayCast3D
+@export var graphics: Node3D
+@export var collision: CollisionShape3D
 
 
 func _enter_tree() -> void:
@@ -27,6 +29,8 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	if !multiplayer.multiplayer_peer:
+		return
 	if !is_multiplayer_authority():
 		return
 	if current_vessel != null:
@@ -62,13 +66,14 @@ func _physics_process(delta: float) -> void:
 
 
 func set_color():
-	if PlayerManager.get_player_data(name.to_int()).has("color"):
-		var color = PlayerManager.get_player_data(name.to_int())["color"]
+	if PlayerManager.get_player_data(id).has("color"):
+		var color = PlayerManager.get_player_data(id)["color"]
 		var material = mesh.get_surface_override_material(0) as ShaderMaterial
 		material.set_shader_parameter("base_color", color)
 		mesh.set_surface_override_material(0, material)
 
 
+## temporary vessel enter and leave functionality
 func _unhandled_input(event):
 	if !is_multiplayer_authority():
 		return
@@ -92,6 +97,11 @@ func _unhandled_input(event):
 				enter_vessel(hit.collider)
 
 
+## -----------------------------------------
+## Vessel Handling
+## -----------------------------------------
+
+
 func enter_vessel(vessel: Vessel):
 	rpc_id(1, "_server_enter_vessel", vessel.get_path())
 
@@ -103,6 +113,7 @@ func _server_enter_vessel(vessel_path: NodePath):
 	
 	var vessel = get_node(vessel_path) as Vessel
 	if vessel.get_multiplayer_authority() == 0:
+		vessel.set_multiplayer_authority(id)
 		rpc("_enter_vessel", vessel.get_path())
 
 
@@ -111,7 +122,18 @@ func _enter_vessel(vessel_path: NodePath):
 	var vessel = get_node(vessel_path) as Vessel
 	vessel.set_multiplayer_authority(id)
 	current_vessel = vessel
-	visible = false
+	
+	collision.disabled = true
+	graphics.set_target(vessel)
+	graphics.arrived.connect(_on_entered)
+
+
+func _on_entered():
+	graphics.visible = false
+	if PlayerManager.get_player_data(id).has("color"):
+		var color = PlayerManager.get_player_data(id)["color"]
+		current_vessel.set_color(color)
+	graphics.arrived.disconnect(_on_entered)
 
 
 func leave_vessel():
@@ -123,11 +145,23 @@ func _server_leave_vessel():
 	if !multiplayer.is_server():
 		return
 	
+	current_vessel.set_multiplayer_authority(0)
 	rpc("_leave_vessel")
 
 
 @rpc("any_peer", "call_local")
 func _leave_vessel():
 	current_vessel.set_multiplayer_authority(0)
+	graphics.global_position = current_vessel.global_position
+	graphics.visible = true
+	current_vessel.clear_color()
 	current_vessel = null
-	visible = true
+	
+	collision.disabled = false
+	graphics.set_target(self)
+	graphics.arrived.connect(_on_left)
+
+
+func _on_left():
+	graphics.global_position = global_position
+	graphics.arrived.disconnect(_on_left)

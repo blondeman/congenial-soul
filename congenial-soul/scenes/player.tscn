@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://clvjfj3e7twfm"]
+[gd_scene load_steps=9 format=3 uid="uid://clvjfj3e7twfm"]
 
 [ext_resource type="Script" uid="uid://dxnslu6ys7eo2" path="res://scripts/Player.gd" id="1_3vyb7"]
 [ext_resource type="Shader" uid="uid://5v721ljfp5rl" path="res://Mote.gdshader" id="2_g2els"]
+[ext_resource type="Script" uid="uid://bh3b11c2682bv" path="res://scripts/PlayerEnterVessel.gd" id="2_qhqgy"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_yqjtg"]
 radius = 0.25
@@ -38,7 +39,7 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "camera", "ray")]
+[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "camera", "ray", "graphics", "collision")]
 collision_layer = 2
 axis_lock_angular_x = true
 axis_lock_angular_z = true
@@ -49,11 +50,15 @@ speed = 5.0
 mesh = NodePath("graphics/MeshInstance3D")
 camera = NodePath("camera")
 ray = NodePath("hover_ray")
+graphics = NodePath("graphics")
+collision = NodePath("collision")
 
 [node name="collision" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_yqjtg")
 
 [node name="graphics" type="Node3D" parent="."]
+script = ExtResource("2_qhqgy")
+travel_time = 0.3
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="graphics"]
 cast_shadow = 0
