@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://bevsw56gvujil"]
 
-[ext_resource type="Script" uid="uid://bibfaroka6ck0" path="res://scripts/EmptyVessel.gd" id="1_1xyma"]
+[ext_resource type="Script" uid="uid://bibfaroka6ck0" path="res://scripts/player/vessels/EmptyVessel.gd" id="1_crpyp"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c7jn6"]
 height = 1.75
@@ -9,7 +9,7 @@ height = 1.75
 height = 1.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1xyma"]
-albedo_color = Color(0.23730096, 0.5417596, 0.57695323, 1)
+albedo_color = Color(0.827451, 0.827451, 0.827451, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_gxuoo"]
 radius = 0.2
@@ -31,7 +31,7 @@ properties/1/spawn = true
 properties/1/replication_mode = 1
 
 [node name="vessel" type="CharacterBody3D" node_paths=PackedStringArray("mesh")]
-script = ExtResource("1_1xyma")
+script = ExtResource("1_crpyp")
 mesh = NodePath("graphics/MeshInstance3D")
 
 [node name="collision" type="CollisionShape3D" parent="."]

@@ -1,7 +1,7 @@
 extends Node
 
 @onready var game_root = get_tree().get_first_node_in_group("game_root")
-var player_scene: PackedScene = preload("res://scenes/player.tscn")
+var player_scene: PackedScene = preload("res://scenes/player/player.tscn")
 var player_data := {} # { peer_id: { "username": String, "color": Color } }
 signal data_changed()
 

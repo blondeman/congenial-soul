@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://eq1pgsn2bp3k"]
+[gd_scene load_steps=7 format=3 uid="uid://eq1pgsn2bp3k"]
 
-[ext_resource type="PackedScene" uid="uid://bevsw56gvujil" path="res://scenes/vessel.tscn" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://bevsw56gvujil" path="res://scenes/player/vessels/vessel.tscn" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://b0d34532ljupb" path="res://scenes/player/vessels/wayfinder.tscn" id="2_yqjtg"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_uwrxv"]
 size = Vector3(20, 1, 20)
@@ -77,3 +78,6 @@ transform = Transform3D(1, 0, 0, 0, 0.79122365, 0.6115271, 0, -0.6115271, 0.7912
 
 [node name="vessel" parent="." instance=ExtResource("1_uwrxv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -3)
+
+[node name="wayfinder" parent="." instance=ExtResource("2_yqjtg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5939064, 1, -0.30601653)
