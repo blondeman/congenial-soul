@@ -3,6 +3,7 @@
 @export var speed: float = 10
 @export var jump_force: float = 10
 @export var mesh: MeshInstance3D
+@export var camera_target: Node3D
 @export var default_color: Color = Color.LIGHT_GRAY
 
 func _enter_tree():
@@ -11,15 +12,24 @@ func _enter_tree():
 
 func _ready() -> void:
 	clear_color()
+	remove_outline()
 
 
 func clear_color():
 	set_color(default_color)
 
 
+func outline():
+	mesh.get_surface_override_material(0).next_pass.set_shader_parameter("outline_thickness", 0.05)
+
+
+func remove_outline():
+	mesh.get_surface_override_material(0).next_pass.set_shader_parameter("outline_thickness", 0.0)
+
+
 func set_color(color: Color):
-	var material = mesh.get_surface_override_material(0) as StandardMaterial3D
-	material.albedo_color = color
+	var material = mesh.get_surface_override_material(0) as ShaderMaterial
+	material.set_shader_parameter("base_color", color)
 	mesh.set_surface_override_material(0, material)
 
 
@@ -27,6 +37,10 @@ func _process(delta: float):
 	if !multiplayer.multiplayer_peer:
 		return
 	if !is_multiplayer_authority():
+		if get_multiplayer_authority() == 0 and !is_on_floor():
+			velocity.y += get_gravity().y * delta
+			velocity.x = 0
+			velocity.z = 0
 		return
 	
 	_process_horizontal(delta)

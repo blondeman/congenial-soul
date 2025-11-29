@@ -1,6 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://bevsw56gvujil"]
+[gd_scene load_steps=12 format=3 uid="uid://bevsw56gvujil"]
 
 [ext_resource type="Script" uid="uid://bibfaroka6ck0" path="res://scripts/player/vessels/EmptyVessel.gd" id="1_crpyp"]
+[ext_resource type="Shader" uid="uid://dc5xher1art27" path="res://shaders/Outline.gdshader" id="2_i22a4"]
+[ext_resource type="Shader" uid="uid://cmrp1wkie5eej" path="res://shaders/Vessel.gdshader" id="3_aqx6e"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c7jn6"]
 height = 1.75
@@ -8,8 +10,17 @@ height = 1.75
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_c7jn6"]
 height = 1.5
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1xyma"]
-albedo_color = Color(0.827451, 0.827451, 0.827451, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aqx6e"]
+render_priority = 0
+shader = ExtResource("2_i22a4")
+shader_parameter/outline_color = Color(0.5764706, 0.8352941, 0.59607846, 1)
+shader_parameter/outline_thickness = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i22a4"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_aqx6e")
+shader = ExtResource("3_aqx6e")
+shader_parameter/base_color = Color(1, 1, 1, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_gxuoo"]
 radius = 0.2
@@ -30,9 +41,11 @@ properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="vessel" type="CharacterBody3D" node_paths=PackedStringArray("mesh")]
+[node name="vessel" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "camera_target")]
+collision_layer = 2
 script = ExtResource("1_crpyp")
 mesh = NodePath("graphics/MeshInstance3D")
+camera_target = NodePath("camera_target")
 
 [node name="collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
@@ -42,17 +55,17 @@ shape = SubResource("CapsuleShape3D_c7jn6")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="graphics"]
 mesh = SubResource("CapsuleMesh_c7jn6")
-surface_material_override/0 = SubResource("StandardMaterial3D_1xyma")
+surface_material_override/0 = SubResource("ShaderMaterial_i22a4")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="graphics"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, -0.5, 0)
 mesh = SubResource("CapsuleMesh_gxuoo")
-surface_material_override/0 = SubResource("StandardMaterial3D_1xyma")
+surface_material_override/0 = SubResource("ShaderMaterial_i22a4")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="graphics"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, -0.5, 0)
 mesh = SubResource("CapsuleMesh_gxuoo")
-surface_material_override/0 = SubResource("StandardMaterial3D_1xyma")
+surface_material_override/0 = SubResource("ShaderMaterial_i22a4")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="graphics"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14540455, 0.22047114, -0.4274847)
@@ -66,3 +79,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_hflg7")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_1xyma")
+
+[node name="camera_target" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

@@ -1,8 +1,31 @@
-[gd_scene load_steps=3 format=3 uid="uid://b0d34532ljupb"]
+[gd_scene load_steps=7 format=3 uid="uid://b0d34532ljupb"]
 
 [ext_resource type="PackedScene" uid="uid://bevsw56gvujil" path="res://scenes/player/vessels/vessel.tscn" id="1_x7smh"]
 [ext_resource type="Script" uid="uid://b888rwk7f4uki" path="res://scripts/player/vessels/WayfinderVessel.gd" id="2_y86p1"]
+[ext_resource type="Shader" uid="uid://dc5xher1art27" path="res://shaders/Outline.gdshader" id="3_0h66k"]
+[ext_resource type="Shader" uid="uid://cmrp1wkie5eej" path="res://shaders/Vessel.gdshader" id="4_wv8dv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lhwan"]
+render_priority = 0
+shader = ExtResource("3_0h66k")
+shader_parameter/outline_color = Color(0.5764706, 0.8352941, 0.59607846, 1)
+shader_parameter/outline_thickness = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p3a5t"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_lhwan")
+shader = ExtResource("4_wv8dv")
+shader_parameter/base_color = Color(1, 1, 1, 1)
 
 [node name="wayfinder" instance=ExtResource("1_x7smh")]
 script = ExtResource("2_y86p1")
 glide_velocity = -2
+
+[node name="MeshInstance3D" parent="graphics" index="0"]
+surface_material_override/0 = SubResource("ShaderMaterial_p3a5t")
+
+[node name="MeshInstance3D2" parent="graphics" index="1"]
+surface_material_override/0 = SubResource("ShaderMaterial_p3a5t")
+
+[node name="MeshInstance3D3" parent="graphics" index="2"]
+surface_material_override/0 = SubResource("ShaderMaterial_p3a5t")

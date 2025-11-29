@@ -9,11 +9,13 @@ var current_vessel: Vessel = null
 @export var speed: float = 10
 
 @export var mesh: MeshInstance3D
-@export var camera: Camera3D
+@export var camera_controller: CameraController
 @export var ray: RayCast3D
 @export var graphics: Node3D
 @export var collision: CollisionShape3D
+@export var camera_target: Node3D
 
+var highlighted_vessel = null
 
 func _enter_tree() -> void:
 	id = name.to_int()
@@ -25,7 +27,8 @@ func _ready() -> void:
 	PlayerManager.data_changed.connect(set_color)
 	
 	if is_multiplayer_authority():
-		camera.current = true
+		camera_controller.set_current()
+		camera_controller.set_target(camera_target)
 
 
 func _process(_delta: float) -> void:
@@ -36,7 +39,10 @@ func _process(_delta: float) -> void:
 	if current_vessel != null:
 		return
 
-	var input_direction = Vector2(Input.get_axis("left", "right"), Input.get_axis("down", "up")).normalized()
+	var input_direction = Vector2(
+		Input.get_axis("left", "right"), 
+		Input.get_axis("down", "up")
+		).normalized()
 	var forward = -get_viewport().get_camera_3d().global_transform.basis.z
 	var right   =  get_viewport().get_camera_3d().global_transform.basis.x
 
@@ -78,23 +84,31 @@ func _unhandled_input(event):
 	if !is_multiplayer_authority():
 		return
 	
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return
+
+	var mouse_pos = get_viewport().get_mouse_position()
+	var from = cam.project_ray_origin(mouse_pos)
+	var to = from + cam.project_ray_normal(mouse_pos) * 1000.0
+
+	var query := PhysicsRayQueryParameters3D.create(from, to)
+	var hit = get_world_3d().direct_space_state.intersect_ray(query)
+
+	if hit and hit.collider is Vessel:
+		highlighted_vessel = hit.collider
+		highlighted_vessel.outline()
+	else:
+		if highlighted_vessel:
+			highlighted_vessel.remove_outline()
+			highlighted_vessel = null
+	
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		var cam := get_viewport().get_camera_3d()
-		if cam == null:
-			return
-
-		var mouse_pos = get_viewport().get_mouse_position()
-		var from = cam.project_ray_origin(mouse_pos)
-		var to = from + cam.project_ray_normal(mouse_pos) * 1000.0
-
-		var query := PhysicsRayQueryParameters3D.create(from, to)
-		var hit = get_world_3d().direct_space_state.intersect_ray(query)
-
-		if hit and hit.collider is Vessel:
-			if hit.collider == current_vessel:
+		if highlighted_vessel:
+			if highlighted_vessel == current_vessel:
 				leave_vessel()
 			else:
-				enter_vessel(hit.collider)
+				enter_vessel(highlighted_vessel)
 
 
 ## -----------------------------------------
@@ -113,12 +127,17 @@ func _server_enter_vessel(vessel_path: NodePath):
 	
 	var vessel = get_node(vessel_path) as Vessel
 	if vessel.get_multiplayer_authority() == 0:
-		vessel.set_multiplayer_authority(id)
 		rpc("_enter_vessel", vessel.get_path())
 
 
 @rpc("any_peer", "call_local")
 func _enter_vessel(vessel_path: NodePath):
+	if current_vessel:
+		current_vessel.set_multiplayer_authority(0)
+		graphics.global_position = current_vessel.global_position
+		graphics.visible = true
+		current_vessel.clear_color()
+	
 	var vessel = get_node(vessel_path) as Vessel
 	vessel.set_multiplayer_authority(id)
 	current_vessel = vessel
@@ -126,6 +145,8 @@ func _enter_vessel(vessel_path: NodePath):
 	collision.disabled = true
 	graphics.set_target(vessel)
 	graphics.arrived.connect(_on_entered)
+	
+	camera_controller.set_target(vessel.camera_target)
 
 
 func _on_entered():
@@ -160,6 +181,8 @@ func _leave_vessel():
 	collision.disabled = false
 	graphics.set_target(self)
 	graphics.arrived.connect(_on_left)
+	
+	camera_controller.set_target(camera_target)
 
 
 func _on_left():
