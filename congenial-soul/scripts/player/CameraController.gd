@@ -6,6 +6,7 @@ var current_target = null
 
 func set_current():
 	camera.current = true
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 func set_target(target: Node3D):

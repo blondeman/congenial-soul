@@ -1,0 +1,84 @@
+[gd_scene load_steps=2 format=3 uid="uid://ckmlfr51txnjp"]
+
+[ext_resource type="Script" uid="uid://dyo836j636bdl" path="res://Settings.gd" id="1_f1d2v"]
+
+[node name="pause" type="CanvasLayer" node_paths=PackedStringArray("pause_menu", "settings_menu")]
+script = ExtResource("1_f1d2v")
+pause_menu = NodePath("buttons")
+settings_menu = NodePath("settings")
+
+[node name="buttons" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -50.5
+offset_right = 47.0
+offset_bottom = 50.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="options" type="Button" parent="buttons/VBoxContainer"]
+layout_mode = 2
+text = "Options"
+
+[node name="disconnect" type="Button" parent="buttons/VBoxContainer"]
+layout_mode = 2
+text = "Disconnect"
+
+[node name="resume" type="Button" parent="buttons/VBoxContainer"]
+layout_mode = 2
+text = "Resume"
+
+[node name="settings" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="settings"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.5
+offset_top = -50.5
+offset_right = 26.5
+offset_bottom = 50.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="setting1" type="Button" parent="settings/VBoxContainer"]
+layout_mode = 2
+text = "One"
+
+[node name="setting2" type="Button" parent="settings/VBoxContainer"]
+layout_mode = 2
+text = "Two"
+
+[node name="setting3" type="Button" parent="settings/VBoxContainer"]
+layout_mode = 2
+text = "Three"
+
+[node name="back" type="Button" parent="settings/VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="buttons/VBoxContainer/options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="buttons/VBoxContainer/resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="settings/VBoxContainer/back" to="." method="_on_back_pressed"]
