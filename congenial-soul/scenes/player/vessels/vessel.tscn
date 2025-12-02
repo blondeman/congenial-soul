@@ -37,14 +37,15 @@ albedo_color = Color(0, 0, 0, 1)
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
+properties/1/path = NodePath("graphics:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="vessel" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "camera_target")]
+[node name="vessel" type="CharacterBody3D" node_paths=PackedStringArray("mesh", "graphics", "camera_target")]
 collision_layer = 2
 script = ExtResource("1_crpyp")
 mesh = NodePath("graphics/MeshInstance3D")
+graphics = NodePath("graphics")
 camera_target = NodePath("camera_target")
 
 [node name="collision" type="CollisionShape3D" parent="."]

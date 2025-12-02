@@ -3,8 +3,11 @@
 @export var speed: float = 10
 @export var jump_force: float = 10
 @export var mesh: MeshInstance3D
+@export var graphics: Node3D
 @export var camera_target: Node3D
 @export var default_color: Color = Color.LIGHT_GRAY
+
+var last_direction: Vector2 = Vector2.ZERO
 
 func _enter_tree():
 	set_multiplayer_authority(0)
@@ -48,7 +51,7 @@ func _process(delta: float):
 	_process_abilities(delta)
 
 
-func _process_horizontal(_delta: float):
+func _process_horizontal(delta: float):
 	var input_direction = Vector2(Input.get_axis("left", "right"), Input.get_axis("down", "up")).normalized()
 	var forward = -get_viewport().get_camera_3d().global_transform.basis.z
 	var right = get_viewport().get_camera_3d().global_transform.basis.x
@@ -59,6 +62,15 @@ func _process_horizontal(_delta: float):
 
 	velocity.x = direction.x * speed
 	velocity.z = direction.z * speed
+	
+	if direction != Vector3.ZERO:
+		last_direction = Vector2(direction.x, direction.z)
+	
+	var target_angle = atan2(-last_direction.y, last_direction.x) - PI/2
+	var current_quaternion = Quaternion(graphics.transform.basis)
+	var target_quaternion = Quaternion(Vector3.UP, target_angle)
+	var interpolated_quaternion = current_quaternion.slerp(target_quaternion, delta * 20)
+	graphics.transform.basis = Basis(interpolated_quaternion)
 
 
 func _process_vertical(delta: float):
