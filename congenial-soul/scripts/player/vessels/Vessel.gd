@@ -1,12 +1,21 @@
 @abstract class_name Vessel extends CharacterBody3D
 
-@export var speed: float = 10
-@export var jump_force: float = 10
+@export_group("Movement")
+@export var speed: float = 8
+@export var ground_accel: float = 100
+@export var air_accel: float = 20
+@export var jump_force: float = 12
+@export var coyote_time := 0.15
+
+@export_group("References")
 @export var mesh: MeshInstance3D
 @export var graphics: Node3D
 @export var camera_target: Node3D
+
+@export_group("Colors")
 @export var default_color: Color = Color.LIGHT_GRAY
 
+var coyote_timer := 0.0
 var last_direction: Vector2 = Vector2.ZERO
 
 func _enter_tree():
@@ -46,25 +55,44 @@ func _process(delta: float):
 			velocity.z = 0
 		return
 	
-	_process_horizontal(delta)
 	_process_vertical(delta)
+	_process_horizontal(delta)
 	_process_abilities(delta)
 
 
 func _process_horizontal(delta: float):
-	var input_direction = Vector2(Input.get_axis("left", "right"), Input.get_axis("down", "up")).normalized()
-	var forward = -get_viewport().get_camera_3d().global_transform.basis.z
-	var right = get_viewport().get_camera_3d().global_transform.basis.x
+	var input_dir = Vector2(
+		Input.get_axis("left", "right"),
+		Input.get_axis("down", "up")
+	).normalized()
 
-	var direction = (right * input_direction.x) + (forward * input_direction.y)
-	direction.y = 0
-	direction = direction.normalized()
+	var cam := get_viewport().get_camera_3d()
+	var forward = -cam.global_transform.basis.z
+	var right = cam.global_transform.basis.x
 
-	velocity.x = direction.x * speed
-	velocity.z = direction.z * speed
+	var desired = (right * input_dir.x) + (forward * input_dir.y)
+	desired.y = 0
+	desired = desired.normalized()
+
+	var accel = 0
+	var target_speed = speed
+
+	if is_on_floor():
+		accel = ground_accel      # e.g. 20.0
+		velocity.x = desired.x * target_speed
+		velocity.z = desired.z * target_speed
+	else:
+		accel = air_accel
+		
+		if desired != Vector3.ZERO:
+			var horizontal_vel = Vector3(velocity.x, 0, velocity.z)
+			horizontal_vel = horizontal_vel.move_toward(desired * target_speed, accel * delta)
+			
+			velocity.x = horizontal_vel.x
+			velocity.z = horizontal_vel.z
 	
-	if direction != Vector3.ZERO:
-		last_direction = Vector2(direction.x, direction.z)
+	if velocity.x != 0 and velocity.z != 0:
+		last_direction = Vector2(velocity.x, velocity.z)
 	
 	var target_angle = atan2(-last_direction.y, last_direction.x) - PI/2
 	var current_quaternion = Quaternion(graphics.transform.basis)
@@ -75,10 +103,20 @@ func _process_horizontal(delta: float):
 
 func _process_vertical(delta: float):
 	if is_on_floor():
-		if Input.is_action_just_pressed("jump"):
-			velocity.y = jump_force
+		coyote_timer = coyote_time
 	else:
+		coyote_timer -= delta
+		coyote_timer = max(coyote_timer, 0.0)
 		velocity.y += get_gravity().y * delta
+	
+	if Input.is_action_just_pressed("jump"):
+		if coyote_timer > 0.0:
+			jump()
+
+
+func jump():
+	coyote_timer = 0
+	velocity.y = jump_force
 
 
 func _process_abilities(_delta: float):
